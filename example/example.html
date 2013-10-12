@@ -7,6 +7,18 @@
 	<script type="text/javascript"
 	src="../bower_components/swfobject/swfobject/swfobject.js"></script>
 	<script type="text/javascript" src="../src/audiorecorder.js"></script>
+
+	<style type="text/css">
+	#audiorecorder-container { 
+		overflow: hidden;
+		width: 1px;
+		height: 1px;
+		position: fixed;
+	}
+	#audiorecorder-container > div {
+		position: static!important;
+	}
+	</style>
 </head>
 <body>
 	<button id="start">Start Capture</button>
