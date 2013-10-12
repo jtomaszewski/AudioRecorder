@@ -15,24 +15,24 @@
 
 	<script type="text/javascript">
 	  var base_url = window.location.toString().replace(/example\.html.*/, '');
-	  AudioRecorder.setWamipath(base_url + '/bower_components/wami-recorder/example/client');
+	  AudioRecorder.init(base_url + '/bower_components/wami-recorder/example/client');
 
-	  var script_url = base_url + 'writeAudio.php';
-	  var sound_url = script_url; 
+	  var create_url = base_url + 'writeAudio.php';
+	  var sound_url = create_url; 
 
-		var rec = new AudioRecorder(script_url, $('body')[0], sound_url);
+		var recorder = new AudioRecorder(create_url, sound_url);
 
 		$('#start').click(function startClick() {
-			rec.start();
+			recorder.start();
 
 			$(this).unbind().click(function() {
-				rec.stop();
+				recorder.stop();
 				$(this).unbind().click(startClick);
 			});
 		});
 
 		$('#play').click(function() {
-			rec.play();
+			recorder.play();
 		});
 	</script>
 </body>

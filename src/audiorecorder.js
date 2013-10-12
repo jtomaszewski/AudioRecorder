@@ -12,54 +12,75 @@ var AudioRecorder = (function(){
 			} else {
 				args.push(arg);
 			}
-		};
+		}
 
 		return args;
 	};
 
 	/**
 	 * Lib to help the recording of user's microphone.
-	 * Remember! You have to use AudioRecorder.setWamiPath() first.
+	 * Remember! You have to call `AudioRecorder.init(path, options)` first.
 	 *
 	 * @param {string}       url        We'll send audio data to this URL
-	 * @param {HTMLElement}  el         HTML element where the SWF of WAMI will be placed
 	 * @param {string}       [url]      URL to the current audio file
-	 * @param {object}       [options]  additional options passed to Wami.setup()
 	 * @uses WAMI http://code.google.com/p/wami-recorder/
 	 */
-	function AudioRecorder(captureUrl, el, soundUrl, options) {
+	function AudioRecorder(captureUrl, soundUrl) {
 		this.captureUrl = captureUrl;
 		if (soundUrl) {
 			this.soundUrl = soundUrl;
-		};
-		audioRecorderId = 'audiorecorder-' + (AudioRecorder.uid++);
-
-		wamiOptions = $.extend({
-			id: audioRecorderId, 
-			swfUrl: AudioRecorder.wamiPath + "/Wami.swf"
-		}, options);
-
-		// Recreate flash container.
-		$(el).find('#'+audioRecorderId).remove();
-		$(el).append('<div class="audiorecorder-object" id="'+ audioRecorderId +'"></div>');
-
-		$.ajax({
-			url: AudioRecorder.wamiPath + '/recorder.js',
-			dataType: 'script',
-			cache: true
-		}).done(function() {
-			Wami.setup(wamiOptions);
-		});
+		}
 	}
 
-	AudioRecorder.uid = 1;
+	var WamiScriptLoadPromise;
+	var loadWami = function(wamiPath, options) {
+		if (typeof Wami !== 'undefined') {
+			Wami.setup(options);
+		} else if (WamiScriptLoadPromise) {
+			WamiScriptLoadPromise.done(function(){
+				Wami.setup(options);
+			});
+		} else {
+			// Wami Recorder Lib has bug in implementation of onReady,
+			// so we have to use our custom promise.
+			var onReadyCb = options.onReady || function(){};
+			WamiScriptLoadPromise = $.Deferred().done(function(){
+				onReadyCb();
+			});
+			options.onReady = function(){
+				WamiScriptLoadPromise.resolve();
+			};
 
-	/**
-	 * Set path of WAMI directory containing recorder.js and Wami.swf.
-	 * (without trailing slash)
-	 */
-	AudioRecorder.setWamiPath = function(wamiPath) {
-		AudioRecorder.wamiPath = wamiPath;
+			$.ajax({
+				url: wamiPath + '/recorder.js',
+				dataType: 'script',
+				cache: true
+			}).done(function() {
+				Wami.setup(options);
+			});
+		}
+	};
+
+	AudioRecorder.init = function(wamiPath, options) {
+		options = $.extend({
+			id: 'audiorecorder-container', 
+			swfUrl: wamiPath + "/Wami.swf"
+		}, options);
+
+		var $object = $('#' + options.id);
+		if (!$object.length) {
+			AudioRecorder.destroy();
+			$object = $('<div id="audiorecorder-container"></div>').prependTo('body');
+		}
+
+		loadWami(wamiPath, options);
+	};
+
+	AudioRecorder.destroy = function() {
+		// Force Wami to recreate it's embed SWF
+		if (typeof Wami !== 'undefined') {
+			Wami.startRecording = null;
+		}
 	};
 
 	/**
