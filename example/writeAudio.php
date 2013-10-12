@@ -9,10 +9,5 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 	fwrite($fh, $content);
 	fclose($fh);
 } else {
-	if (isset($_GET['save'])) {// converts to mp3 using lame
-		$cmd = "lame /tmp/{$session_id}.wav /tmp/{$session_id}.mp3";
-		exec($cmd);
-	} elseif (file_exists("/tmp/{$session_id}.wav")) {
-		readfile("/tmp/{$session_id}.wav");
-	}
+	readfile("/tmp/{$session_id}.wav");
 }

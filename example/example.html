@@ -11,26 +11,28 @@
 <body>
 	<button id="start">Start Capture</button>
 	<button id="play">Preview</button>
-	<button id="save">Save to MP3</button>
 	<div id="flash"></div>
 
 	<script type="text/javascript">
 	  var base_url = window.location.toString().replace(/example\.html.*/, '');
-		var rec = new AudioRecorder(base_url + '/libs/', base_url + 'writeAudio.php', $('body')[0], 'writeAudio.php?save=1');
+	  AudioRecorder.setWamipath(base_url + '/bower_components/wami-recorder/example/client');
+
+	  var script_url = base_url + 'writeAudio.php';
+	  var sound_url = script_url; 
+
+		var rec = new AudioRecorder(script_url, $('body')[0], sound_url);
 
 		$('#start').click(function startClick() {
 			rec.start();
+
 			$(this).unbind().click(function() {
 				rec.stop();
 				$(this).unbind().click(startClick);
 			});
 		});
+
 		$('#play').click(function() {
 			rec.play();
-		});
-
-		$('#save').click(function() {
-			rec.save();
 		});
 	</script>
 </body>

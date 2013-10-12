@@ -1,10 +1,10 @@
 {
   "name": "AudioRecorder",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "homepage": "https://github.com/jtomaszewski/AudioRecorder",
   "authors": [
     "charlesschaefer",
-    "jtomaszewskijtomaszewski"
+    "jtomaszewski"
   ],
   "description": "AudioRecorder is a javascript that encapsulates the Wami-recorder lib.",
   "main": "src/audiorecorder.js",
@@ -23,7 +23,7 @@
     "tests"
   ],
   "dependencies": {
-    "wami-recorder": "*",
+    "wami-recorder": "jtomaszewski/wami-recorder",
     "jquery": "*"
   }
 }
